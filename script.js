@@ -6,6 +6,10 @@ const questionElement = document.getElementById('question');
 const answerButtonElement = document.getElementById('options');
 let shuffleQuestions, currentQuestionIndex;
 let userName = document.getElementById('name');
+nextButton.addEventListener('click', () => {
+    currentQuestionIndex++;
+    nextQuestion();
+});
 function startGame(){
     questionContainerElement.classList.remove('hide');
     startButton.classList.add('hide');
@@ -15,6 +19,7 @@ function startGame(){
     nextQuestion();
 }
 function nextQuestion(){
+    resetState();
     showQuestion(shuffleQuestions[currentQuestionIndex]);
     nextButton.classList.remove('hide');
 }
@@ -31,15 +36,40 @@ function showQuestion(question){
         answerButtonElement.appendChild(button).classList.add('btn');
     });
 }
-function selectAnswer(e){
-    const selectedButton = e.target;
-    const isCorrect = selectedButton.dataset.correct === 'true';
-    if(isCorrect){
-        document.body.classList.add('correct');
-    }else{
-        document.body.classList.add('wrong');
+function resetState(){
+    clearStatusClass(document.body);
+    nextButton.classList.add('hide');
+    while(answerButtonElement.firstChild){
+        answerButtonElement.removeChild(answerButtonElement.firstChild);
     }
 }
+function selectAnswer(e){
+    const selectedButton = e.target;
+    const correct = selectedButton.dataset.correct ;
+    setStatusClass(document.body, correct);
+    Array.from(answerButtonElement.children).forEach(button => {
+        setStatusClass(button, button.dataset.correct);
+    })
+    if(shuffleQuestions.length > currentQuestionIndex + 1){
+nextButton.classList.remove('hide');}
+else{startButton.innerText = "Restart"
+    startButton.classList.remove('hide');}
+}
+
+function setStatusClass(element, correct){
+    clearStatusClass(element);
+    if(correct){
+        element.classList.add('correct');
+    }else{
+        element.classList.add('wrong');
+        }
+}
+
+function clearStatusClass(element){
+    element.classList.remove('correct');
+    element.classList.remove('wrong');
+}
+
 let questions = [
     {
         question: "What is the capital of France?",
